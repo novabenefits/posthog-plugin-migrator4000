@@ -43,18 +43,24 @@ const parseAndSendEvents = async (events: PluginEventExtra[], { config, global }
 
 
         if (sendableEvent.properties && sendableEvent.properties.$elements) {
+            if(global.debug){
+              console.log('OldElements: ', sendableEvent.properties.$elements);
+            }
             const newElements = []
             for (const element of sendableEvent.properties.$elements) {
                 for (const [key, val] of Object.entries(element)) {
                     if (key in ELEMENT_TRANSFORMATIONS) {
-                        element[ELEMENT_TRANSFORMATIONS[key]] = val
-                        delete element[key]
+                      element[ELEMENT_TRANSFORMATIONS[key]] = key === "attr_class"? val.join(" "): val;
+                      delete element[key]
                     }
                 }
                 newElements.push({ ...element.attributes, ...element })
                 delete element['attributes']
             }
             sendableEvent.properties.$elements = newElements
+            if(global.debug){
+              console.log('NewElements: ', newElements);
+            }
         }
         sendableEvent.timestamp = event.timestamp || new Date(Date.now()).toISOString()
         batch.push(sendableEvent)
