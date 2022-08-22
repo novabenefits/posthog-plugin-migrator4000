@@ -47,7 +47,7 @@ const parseAndSendEvents = async (events: PluginEventExtra[], { config, global }
             for (const element of sendableEvent.properties.$elements) {
                 for (const [key, val] of Object.entries(element)) {
                     if (key in ELEMENT_TRANSFORMATIONS) {
-                      if(key =='attr_class' && typeof(val) != 'string'){
+                      if(key =='attr_class' && (typeof(val) != 'string' || !val)){
                         console.log("Found non-string class_attr, ", val, "for ", sendableEvent.uuid);
                       }else{
                       element[ELEMENT_TRANSFORMATIONS[key]] = val;
