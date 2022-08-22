@@ -43,7 +43,7 @@ const parseAndSendEvents = async (events: PluginEventExtra[], { config, global }
 
 
         if (sendableEvent.properties && sendableEvent.properties.$elements) {
-            if(global.debug){
+            if(global.debug && sendableEvent.properties.$elements.length){
               console.log('OldElements: ', sendableEvent.properties.$elements);
             }
             const newElements = []
@@ -58,7 +58,7 @@ const parseAndSendEvents = async (events: PluginEventExtra[], { config, global }
                 delete element['attributes']
             }
             sendableEvent.properties.$elements = newElements
-            if(global.debug){
+            if(global.debug && sendableEvent.properties.$elements.length){
               console.log('NewElements: ', newElements);
             }
         }
