@@ -43,14 +43,15 @@ const parseAndSendEvents = async (events: PluginEventExtra[], { config, global }
 
 
         if (sendableEvent.properties && sendableEvent.properties.$elements) {
-            if(global.debug && sendableEvent.properties.$elements.length){
-              console.log('OldElements: ', sendableEvent.properties.$elements);
-            }
             const newElements = []
             for (const element of sendableEvent.properties.$elements) {
                 for (const [key, val] of Object.entries(element)) {
                     if (key in ELEMENT_TRANSFORMATIONS) {
-                      element[ELEMENT_TRANSFORMATIONS[key]] = key === "attr_class"? val.join(" "): val;
+                      if(key =='attr_class' && typeof(val) != 'string'){
+                        console.log("Found non-string class_attr, ", val, "for ", sendableEvent.uuid);
+                      }else{
+                      element[ELEMENT_TRANSFORMATIONS[key]] = val;
+                      }
                       delete element[key]
                     }
                 }
@@ -58,9 +59,6 @@ const parseAndSendEvents = async (events: PluginEventExtra[], { config, global }
                 delete element['attributes']
             }
             sendableEvent.properties.$elements = newElements
-            if(global.debug && sendableEvent.properties.$elements.length){
-              console.log('NewElements: ', newElements);
-            }
         }
         sendableEvent.timestamp = event.timestamp || new Date(Date.now()).toISOString()
         batch.push(sendableEvent)
